@@ -68,7 +68,7 @@ export default async function Home() {
                                     <Typography variant="h4" gutterBottom>
                                         {item.name}
                                     </Typography>
-                                    <Link href={`products-list/${item.type}`}>
+                                    <Link href={`listing/${item.slug}/${item.type}`}>
                                         View More
                                     </Link>
                                 </Stack>

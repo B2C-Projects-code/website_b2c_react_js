@@ -54,3 +54,31 @@ export const fetchWebsiteContent = async () => {
     console.error(error);
   }
 };
+export const fetchProductList = async ({
+  slug,
+  type,
+}: {
+  slug: string;
+  type: string;
+}) => {
+  try {
+    const response = await fetch(
+      `${base_url}/website/categoryfind?cf=${slug}&type=${type}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
