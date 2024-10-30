@@ -2,6 +2,7 @@ import { Container, Stack } from '@mui/material';
 import React from 'react'
 import { Breadcrumbs } from '@components/breadcrumbs'
 import Grid from '@mui/material/Grid2';
+import Aside from './components/aside';
 // add meta data
 export async function generateMetadata({ params }: any) {
     const { slug } = params
@@ -25,7 +26,7 @@ function ListingLayout({
             <Stack mt={3}>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 4, lg: 3 }}>
-                        sidebar
+                        <Aside />
                     </Grid>
                     <Grid size={{ xs: 12, md: 8, lg: 9 }}>
                         {children}
