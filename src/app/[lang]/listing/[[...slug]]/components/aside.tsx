@@ -8,6 +8,24 @@ function Aside() {
     const [open, setOpen] = React.useState<null | number>(null);
     const { data } = useAppSelector(state => state.websiteContent)
     const categories = data?.categories || [];
+    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
+    const brands = data?.brands || [];
+    const groupedBrands = brands.reduce((acc: any, brand: any) => {
+        const firstLetter = brand.name.charAt(0).toUpperCase();
+        if (!acc[firstLetter]) {
+            acc[firstLetter] = [];
+        }
+        acc[firstLetter].push(brand);
+        return acc;
+    }, {});
+
+    // Convert the object to a sorted array
+    const sortedGroupedBrands = Object.keys(groupedBrands)
+        .sort()
+        .map(letter => ({
+            letter,
+            brands: groupedBrands[letter]
+        }));
     return (
         <AsideStyled variant='permanent' PaperProps={{
             sx: { position: 'static', border: 0 }
@@ -64,6 +82,40 @@ function Aside() {
                         })
                     }
                 </List>
+            </Stack>
+            <Stack border={1} borderColor="divider" borderRadius={3} p={3}>
+                <Typography variant='h6' fontWeight={600}>Brands</Typography>
+                <Divider className='underline' />
+                <Stack direction='row' spacing={1} mt={2}>
+                    <Stack maxHeight={300} overflow='auto' width={1}>
+                        {sortedGroupedBrands.map((brand, idx) => (
+                            <React.Fragment key={brand.letter}>
+                                <Typography key={idx} id={brand.letter} variant='body1' fontWeight={600}>{brand.letter}</Typography>
+                                <List disablePadding>
+                                    {
+                                        brand.brands.map((item: any) => (
+                                            <ListItem disablePadding key={item.id}>
+                                                <ListItemText primary={item.name} />
+                                            </ListItem>
+                                        ))
+                                    }
+                                </List>
+                            </React.Fragment>
+
+                        ))}
+                    </Stack>
+                    <Stack>
+                        <List disablePadding>
+                            {
+                                alphabet.map((letter, idx) => (
+                                    <ListItem disablePadding key={idx}>
+                                        <ListItemText primaryTypographyProps={{ fontSize: 8 }} primary={letter} />
+                                    </ListItem>
+                                ))
+                            }
+                        </List>
+                    </Stack>
+                </Stack>
             </Stack>
         </AsideStyled>
     )

@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation';
 import { Grid2, Stack } from '@mui/material';
 import { ProductCard } from '@components/cards';
 import { Pagination } from '@components/pagination';
-async function ListingPage({ ...props }) {
-    const { params: { slug } } = props;
+async function ListingPage({ params }: { params: { slug: string[] } }): Promise<React.JSX.Element> {
+    const { slug } = params;
     const data = await fetchProductList({ slug: slug[0], type: slug[1] });
     const products = data?.products || [];
     if (!data) {
