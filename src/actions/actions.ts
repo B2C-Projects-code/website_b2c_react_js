@@ -64,11 +64,25 @@ export const fetchProductList = async ({
   try {
     const response = await fetch(
       `${base_url}/website/categoryfind?cf=${slug}&type=${type}`,
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const fetchFindBrands = async (name: string) => {
+  try {
+    const response = await fetch(
+      `${base_url}/website/brand_find?name=${name}`,
       {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        cache: "no-store",
       }
     );
 

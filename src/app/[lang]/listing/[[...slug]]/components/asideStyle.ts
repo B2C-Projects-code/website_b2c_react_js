@@ -59,4 +59,19 @@ export const AsideStyled = styled(Drawer)(({ theme }) => ({
       },
     },
   },
+  ".brand-list-alphabet": {
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.shape.borderRadius,
+    padding: theme.spacing(0.5),
+    li: {
+      justifyContent: "center",
+      ".MuiListItemText-root": {
+        flex: "none",
+        margin: 0,
+        ".MuiTypography-root": {
+          fontSize: 8,
+        },
+      },
+    },
+  },
 }));

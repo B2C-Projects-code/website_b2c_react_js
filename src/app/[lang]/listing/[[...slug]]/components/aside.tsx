@@ -1,12 +1,18 @@
 'use client'
-import React from 'react'
+import React, { useRef } from 'react'
 import { AsideStyled } from './asideStyle'
 import { Collapse, Divider, List, ListItem, ListItemIcon, ListItemText, Stack, Typography } from '@mui/material'
-import { useAppSelector } from '@lib/redux/store'
+import { useAppDispatch, useAppSelector } from '@lib/redux/store';
+import { setOpenFilterListing, openFilterListing } from '@lib/redux/base'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { useRouter } from 'next/navigation'
+
 function Aside() {
-    const [open, setOpen] = React.useState<null | number>(null);
+    const dispatch = useAppDispatch();
+    const stackRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
     const { data } = useAppSelector(state => state.websiteContent)
+    const open = useAppSelector(openFilterListing)
     const categories = data?.categories || [];
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
     const brands = data?.brands || [];
@@ -26,6 +32,15 @@ function Aside() {
             letter,
             brands: groupedBrands[letter]
         }));
+    const scrollToSection = (letter: string) => {
+        const section = document.getElementById(letter);
+        if (section && stackRef.current) {
+            // Calculate the position relative to the Stack's top
+            const topOffset = section.offsetTop - stackRef.current.offsetTop;
+            stackRef.current.scrollTo({ top: topOffset, behavior: 'smooth' });
+        }
+    };
+
     return (
         <AsideStyled variant='permanent' PaperProps={{
             sx: { position: 'static', border: 0 }
@@ -38,7 +53,7 @@ function Aside() {
                         categories.map((item: any, idx: number) => {
                             return (
                                 <React.Fragment key={item.id}>
-                                    <ListItem disablePadding onClick={() => setOpen(open === idx ? null : idx)}>
+                                    <ListItem disablePadding onClick={() => dispatch(setOpenFilterListing(open === idx ? null : idx))}>
                                         <ListItemIcon sx={{
                                             svg: {
                                                 transform: open === idx ? 'rotate(90deg)' : 'none', transition: 'all 0.3s ease-in-out',
@@ -56,15 +71,14 @@ function Aside() {
 
                                                 item?.sub_cat.map((sub: any) => (
                                                     <>
-                                                        <ListItem onClick={(e) => console.log('parent')} sx={{ py: 0, flexDirection: 'column', alignItems: 'flex-start' }} key={sub.id}>
+                                                        <ListItem onClick={(e) => { router.push(`/listing/${sub.slug}/${sub.type}`); }} sx={{ py: 0, flexDirection: 'column', alignItems: 'flex-start' }} key={sub.id}>
                                                             <ListItemText primary={sub.name} />
-
                                                         </ListItem>
                                                         <List disablePadding className='sub-sub-cat'>
                                                             {
-                                                                sub?.sub_sub_cat.map((subsub: any) => (
-                                                                    <ListItem onClick={(e) => { e.stopPropagation(); console.log('child') }} disablePadding sx={{ py: 0 }} key={subsub.id}>
-                                                                        <ListItemText primary={subsub.name} />
+                                                                sub?.sub_sub_cat.map((sub_sub: any) => (
+                                                                    <ListItem onClick={(e) => { router.push(`/listing/${sub_sub.slug}/${sub_sub.type}`); }} disablePadding sx={{ py: 0 }} key={sub_sub.id}>
+                                                                        <ListItemText primary={sub_sub.name} />
                                                                     </ListItem>
                                                                 ))
                                                             }
@@ -83,18 +97,18 @@ function Aside() {
                     }
                 </List>
             </Stack>
-            <Stack border={1} borderColor="divider" borderRadius={3} p={3}>
+            <Stack border={1} borderColor="divider" borderRadius={3} p={3} mt={2}>
                 <Typography variant='h6' fontWeight={600}>Brands</Typography>
                 <Divider className='underline' />
-                <Stack direction='row' spacing={1} mt={2}>
-                    <Stack maxHeight={300} overflow='auto' width={1}>
+                <Stack direction='row' spacing={2.5} mt={2}>
+                    <Stack ref={stackRef} maxHeight={320} overflow='auto' width={1}>
                         {sortedGroupedBrands.map((brand, idx) => (
                             <React.Fragment key={brand.letter}>
                                 <Typography key={idx} id={brand.letter} variant='body1' fontWeight={600}>{brand.letter}</Typography>
                                 <List disablePadding>
                                     {
                                         brand.brands.map((item: any) => (
-                                            <ListItem disablePadding key={item.id}>
+                                            <ListItem onClick={() => router.push(`/listing/brands/${(item.name).replace(" ", "-")}`)} disablePadding key={item.id}>
                                                 <ListItemText primary={item.name} />
                                             </ListItem>
                                         ))
@@ -105,11 +119,11 @@ function Aside() {
                         ))}
                     </Stack>
                     <Stack>
-                        <List disablePadding>
+                        <List disablePadding className='brand-list-alphabet'>
                             {
                                 alphabet.map((letter, idx) => (
-                                    <ListItem disablePadding key={idx}>
-                                        <ListItemText primaryTypographyProps={{ fontSize: 8 }} primary={letter} />
+                                    <ListItem disablePadding key={idx} onClick={() => scrollToSection(letter)}>
+                                        <ListItemText primary={letter} />
                                     </ListItem>
                                 ))
                             }
