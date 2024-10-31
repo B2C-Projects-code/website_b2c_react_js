@@ -1,16 +1,24 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { setMode, setDirection, setLocale, setIsDarkMode } from "./actions";
+import {
+  setMode,
+  setDirection,
+  setLocale,
+  setIsDarkMode,
+  setOpenFilterListing,
+} from "./actions";
 interface state {
   mode: string;
   isDarkMode: boolean;
   direction: string;
   locale: string;
+  openFilterListing: number | null;
 }
 const initialState: state = {
   mode: "light",
   isDarkMode: false,
   direction: "ltr",
   locale: "enUS",
+  openFilterListing: null,
 };
 
 export const appReducer = createReducer(initialState, (builder) => {
@@ -25,5 +33,8 @@ export const appReducer = createReducer(initialState, (builder) => {
   });
   builder.addCase(setIsDarkMode, (state, action: any) => {
     state.isDarkMode = action.payload;
+  });
+  builder.addCase(setOpenFilterListing, (state, action) => {
+    state.openFilterListing = action.payload;
   });
 });
